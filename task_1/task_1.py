@@ -10,8 +10,8 @@ INVISIBLE_ELEMS = ('style', 'script', 'head', 'title')
 RE_SPACES = re.compile(r'\s{3,}')
 TM_SYMBOL = '\u2122'.encode('utf-8').decode('utf-8')
 
+
 def visible_texts(soup):
-    # https://stackoverflow.com/questions/1936466/beautifulsoup-grab-visible-webpage-text
     """ get visible text from a document """
     text = ' '.join([
         s for s in soup.strings
@@ -20,10 +20,12 @@ def visible_texts(soup):
     # collapse multiple spaces to two spaces.
     return RE_SPACES.sub('  ', text)
 
+
 def add_symbols(words, text):
     for word in list(words):
         text = text.replace(word, word + TM_SYMBOL)
     return text
+
 
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
@@ -39,7 +41,7 @@ def proxy(path):
     # Strip symbols
     words = re.sub(r'[^\w]', ' ', texts)
 
-    # Get words of interst
+    # Get words of interest
     long_words = {w for w in words.split(' ') if len(w) >= 10}
 
     # Add symbols to source code
@@ -47,6 +49,7 @@ def proxy(path):
     edited_html = add_symbols(long_words, source_html)
 
     data = str(edited_html).encode('utf-8')
-    return  data
+    return data
+
 
 app.run(host='0.0.0.0', port=8000)
